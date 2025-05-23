@@ -1,11 +1,10 @@
 
 ## Deskripsi Proyek
-HealthierBot adalah chatbot dalam bidang kesehatan medis yang dirancang untuk membantu pengguna dalam berbagai aspek kesehatan dan nutrisi. Proyek ini menggunakan teknologi pemrosesan bahasa alami (NLP) dan Speech Recognition untuk memberikan saran diet, menghitung kalori makanan, dan mungkin memberikan diagnosis atau pengobatan sederhana berdasarkan gejala yang diinput pengguna.
+HealthierBot adalah chatbot dalam bidang kesehatan medis yang dirancang untuk membantu pengguna dalam berbagai aspek kesehatan dan nutrisi. Proyek ini menggunakan teknologi Natural Language Processing(NLP) dan Speech Recognition (SR) untuk menghasilkan chatbot sederhana berdasarkan gejala yang diinput pengguna.
 
 ## Fitur Utama
-1. **Saran Diet dan Makanan Seimbang**: Memberikan rekomendasi makanan yang sehat dan seimbang berdasarkan preferensi dan kebutuhan pengguna.
-2. **Penghitungan Kalori Makanan**: Menghitung jumlah kalori dari makanan yang dikonsumsi pengguna.
-3. **Diagnosis Sederhana**: Memberikan diagnosis awal atau saran pengobatan berdasarkan gejala yang diinput oleh pengguna.
+**Chatbot based on API AI** : Chatbot akan memberikan deskripsi sesuai dengan dataset symptom_Description dan memberikan output yang sesuai.
+
 
 ## Struktur Proyek
 
@@ -144,48 +143,6 @@ POST /api/chat
 
 ---
 
-###  Informasi Penyakit
-
-```http
-GET /api/disease/{disease_name}
-```
-
-Contoh:
-
-```http
-GET /api/disease/flu
-```
-
----
-
-###  Saran Diet
-
-```http
-POST /diet
-```
-
-**Request:**
-
-```json
-{ "input": "I want a high protein diet" }
-```
-
----
-
-###  Hitung Kalori
-
-```http
-POST /calories
-```
-
-**Request:**
-
-```json
-{ "food_items": ["apple", "rice", "egg"] }
-```
-
----
-
 ##  Model NLP (LLM) & Pelatihan
 
 Model digunakan dari Huggingface (misal `llama4:scout`).
@@ -303,6 +260,5 @@ Model ini dimuat dari **Hugging Face Transformers** untuk pengenalan suara otoma
 
 * Integrasi dengan basis data penyakit nyata (WHO/CDC).
 * LLM fine-tuning lebih dalam dengan data medis yang lebih kaya.
-* Penyempurnaan logika diet & kalori menggunakan tabel USDA.
 
 ---

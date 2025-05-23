@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+transformers
+torch
+pandas
+scikit-learn
+python-dotenv
+torch
+librosa
+openai
+streamlit

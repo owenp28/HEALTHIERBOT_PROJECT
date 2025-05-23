@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "fastapi": "^0.0.8",
+    "fastapi-next": "^1.5.2",
+    "main.js": "^0.0.1",
+    "node": "^22.15.0",
+    "pandas": "^0.0.3"
+  }
+}

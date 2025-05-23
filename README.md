@@ -1,6 +1,6 @@
 
 ## Deskripsi Proyek
-HealthyBuddy adalah search tools dalam bidang kesehatan medis yang dirancang untuk membantu pengguna dalam berbagai aspek kesehatan dan nutrisi. Proyek ini menggunakan teknologi pemrosesan bahasa alami (NLP) untuk memberikan saran diet, menghitung kalori makanan, dan mungkin memberikan diagnosis atau pengobatan sederhana berdasarkan gejala yang diinput pengguna.
+HealthierBot adalah chatbot dalam bidang kesehatan medis yang dirancang untuk membantu pengguna dalam berbagai aspek kesehatan dan nutrisi. Proyek ini menggunakan teknologi pemrosesan bahasa alami (NLP) dan Speech Recognition untuk memberikan saran diet, menghitung kalori makanan, dan mungkin memberikan diagnosis atau pengobatan sederhana berdasarkan gejala yang diinput pengguna.
 
 ## Fitur Utama
 1. **Saran Diet dan Makanan Seimbang**: Memberikan rekomendasi makanan yang sehat dan seimbang berdasarkan preferensi dan kebutuhan pengguna.
@@ -10,7 +10,7 @@ HealthyBuddy adalah search tools dalam bidang kesehatan medis yang dirancang unt
 ## Struktur Proyek
 
 ```
-HEALTHYBUDDYPROJECT_NLP_SR/
+HEALTHYBOT_STREAMLIT/
 ├── __pycache__/
 │   ├── __init__.py
 │   ├── __init__.cpython-310.pyc

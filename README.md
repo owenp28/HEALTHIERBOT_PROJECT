@@ -176,7 +176,6 @@ transcribe_audio("path_to_your_audio_file.wav")
 
 ##  Catatan
 
-* Endpoint `/diet` dan `/calories` masih menggunakan **template sederhana**. Dapat dikembangkan dengan LLM atau aturan berbasis data gizi.
 * File `backends.py` dan `routes.py` memiliki fungsi mirip; pastikan kamu memilih salah satu integrasi endpoint secara konsisten.
 * Endpoint `/process` dalam `routes.py` hanya akan aktif jika di-include ke dalam `main.py`.
 

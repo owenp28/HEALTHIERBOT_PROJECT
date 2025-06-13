@@ -3,6 +3,19 @@ import json
 import pandas as pd
 import os
 
+# Page configuration - MUST BE THE FIRST STREAMLIT COMMAND
+st.set_page_config(
+    page_title="HealthierBot",
+    page_icon="🤖",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://www.extremelycoolapp.com/help',
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': "# HealthierBot - Asisten Kesehatan Medis"
+    }
+)
+
 # Set custom color theme - using a triadic color scheme
 primary_color = "#4287f5"    # Blue
 secondary_color = "#f542a1"  # Pink
@@ -62,19 +75,6 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
-# Page configuration
-st.set_page_config(
-    page_title="HealthierBot",
-    page_icon="🤖",
-    layout="wide",
-    initial_sidebar_state="expanded",
-    menu_items={
-        'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
-        'About': "# HealthierBot - Asisten Kesehatan Medis"
-    }
-)
 
 # Load datasets
 @st.cache_data

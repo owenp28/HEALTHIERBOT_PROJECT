@@ -2,7 +2,6 @@ import streamlit as st
 import json
 import pandas as pd
 from dotenv import load_dotenv
-import tempfile
 import os
 import speech_recognition as sr
 
@@ -23,17 +22,29 @@ st.set_page_config(
 )
 
 # Function to transcribe audio
-def transcribe_audio(audio_file):
+def transcribe_audio(audio_bytes):
+    # Simpan audio ke file sementara
+    temp_file = "temp_audio.wav"
+    with open(temp_file, "wb") as f:
+        f.write(audio_bytes)
+    
+    # Transkripsi
     recognizer = sr.Recognizer()
-    with sr.AudioFile(audio_file) as source:
-        audio_data = recognizer.record(source)
-        try:
+    try:
+        with sr.AudioFile(temp_file) as source:
+            audio_data = recognizer.record(source)
             text = recognizer.recognize_google(audio_data, language="id-ID")
             return text.lower()
-        except sr.UnknownValueError:
-            return "Maaf, audio tidak dapat dikenali"
-        except sr.RequestError:
-            return "Maaf, layanan tidak tersedia"
+    except sr.UnknownValueError:
+        return "Maaf, audio tidak dapat dikenali"
+    except sr.RequestError:
+        return "Maaf, layanan tidak tersedia"
+    except Exception as e:
+        return f"Error: {str(e)}"
+    finally:
+        # Hapus file sementara
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
 
 # Load datasets
 @st.cache_data
@@ -228,15 +239,15 @@ if menu == "ChatBot Kesehatan":
         audio_file = st.file_uploader("Unggah file audio", type=["wav"])
         
         if audio_file is not None:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_file:
-                tmp_file.write(audio_file.read())
-                tmp_path = tmp_file.name
+            # Baca file audio
+            audio_bytes = audio_file.read()
             
-            st.audio(tmp_path, format="audio/wav")
+            # Tampilkan audio
+            st.audio(audio_bytes, format="audio/wav")
             
             if st.button("Transkripsi & Kirim"):
                 with st.spinner("Mentranskripsikan audio..."):
-                    user_input = transcribe_audio(tmp_path)
+                    user_input = transcribe_audio(audio_bytes)
                     st.success(f"Transkripsi: {user_input}")
                     
                     # Process the transcribed input

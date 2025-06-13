@@ -3,6 +3,66 @@ import json
 import pandas as pd
 import os
 
+# Set custom color theme - using a triadic color scheme
+primary_color = "#4287f5"    # Blue
+secondary_color = "#f542a1"  # Pink
+accent_color = "#42f5b3"     # Mint
+
+# Custom CSS for better UI
+st.markdown("""
+<style>
+    .main {
+        font-family: 'Roboto', sans-serif;
+    }
+    h1, h2, h3 {
+        color: #333333;
+    }
+    .stButton>button {
+        background-color: """ + primary_color + """;
+        color: white;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+    }
+    .stButton>button:hover {
+        background-color: """ + secondary_color + """;
+    }
+    .metric-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    .info-box {
+        background-color: #e8f4f8;
+        border-left: 5px solid """ + primary_color + """;
+        padding: 1rem;
+        border-radius: 5px;
+    }
+    .warning-box {
+        background-color: #fff3cd;
+        border-left: 5px solid #ffc107;
+        padding: 1rem;
+        border-radius: 5px;
+    }
+    .sidebar .sidebar-content {
+        background-color: #f8f9fa;
+    }
+    .stTextInput>div>div>input {
+        border-radius: 5px;
+    }
+    .symmetric-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+    .symmetric-item {
+        flex: 1;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Page configuration
 st.set_page_config(
     page_title="HealthierBot",
@@ -171,7 +231,13 @@ chat_data, df_symptom, food_data = load_datasets()
 
 # UI Streamlit
 st.title("🤖 HealthierBot")
-menu = st.sidebar.selectbox("Pilih Fitur", ["ChatBot Kesehatan", "Saran Diet", "Kalkulator Kalori", "Diagnosis Sederhana"])
+st.markdown("<p style='font-size: 1.2em; color: #666;'>Asisten kesehatan digital untuk informasi medis dan gaya hidup sehat</p>", unsafe_allow_html=True)
+
+# Sidebar with menu
+with st.sidebar:
+    st.image("https://img.icons8.com/color/96/000000/healthcare-and-medical.png", width=80)
+    st.markdown("### Menu Utama")
+    menu = st.selectbox("Pilih Fitur", ["ChatBot Kesehatan", "Saran Diet", "Kalkulator Kalori", "Diagnosis Sederhana"])
 
 # ChatBot Kesehatan
 if menu == "ChatBot Kesehatan":
@@ -179,27 +245,34 @@ if menu == "ChatBot Kesehatan":
     
     # History controls in sidebar
     with st.sidebar:
+        st.markdown("---")
         st.subheader("Pengaturan History Chat")
-        if st.button("Hapus History"):
-            st.session_state.chat_history = []
-            save_chat_history()
-            st.success("History chat berhasil dihapus!")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Hapus History", use_container_width=True):
+                st.session_state.chat_history = []
+                save_chat_history()
+                st.success("History chat berhasil dihapus!")
         
-        show_history = st.checkbox("Tampilkan History", value=True)
+        with col2:
+            show_history = st.checkbox("Tampilkan History", value=True)
+        
         if len(st.session_state.chat_history) > 0:
             if st.download_button(
                 "Unduh History Chat",
                 data=json.dumps(st.session_state.chat_history, ensure_ascii=False, indent=2),
                 file_name="chat_history.json",
-                mime="application/json"
+                mime="application/json",
+                use_container_width=True
             ):
                 st.success("History chat berhasil diunduh!")
     
-    # API key input
-    with st.sidebar.expander("OpenAI API Settings", expanded=False):
-        api_key = st.text_input("OpenAI API Key (opsional)", type="password")
-        st.caption("Jika tidak diisi, bot akan menggunakan dataset lokal")
-        use_openai = st.checkbox("Gunakan OpenAI API", value=False)
+        # API key input
+        st.markdown("---")
+        with st.expander("OpenAI API Settings", expanded=False):
+            api_key = st.text_input("OpenAI API Key (opsional)", type="password")
+            st.caption("Jika tidak diisi, bot akan menggunakan dataset lokal")
+            use_openai = st.checkbox("Gunakan OpenAI API", value=False)
     
     # Display chat history if enabled
     if show_history and len(st.session_state.chat_history) > 0:
@@ -261,82 +334,107 @@ if menu == "ChatBot Kesehatan":
 
 elif menu == "Saran Diet":
     st.header("🥗 Saran Diet dan Makanan Seimbang")
+    st.markdown('<div class="info-box">Dapatkan rekomendasi diet berdasarkan data fisik dan tujuan Anda</div>', unsafe_allow_html=True)
     
+    # Create two equal columns for input
     col1, col2 = st.columns(2)
     
     with col1:
-        berat_badan = st.number_input("Berat Badan (kg)", min_value=30.0, max_value=200.0, value=60.0)
-        tinggi_badan = st.number_input("Tinggi Badan (cm)", min_value=100.0, max_value=250.0, value=165.0)
-        usia = st.number_input("Usia", min_value=15, max_value=100, value=25)
+        st.markdown("#### Data Fisik")
+        berat_badan = st.number_input("Berat Badan (kg)", min_value=30.0, max_value=200.0, value=60.0, step=0.5, format="%.1f")
+        tinggi_badan = st.number_input("Tinggi Badan (cm)", min_value=100.0, max_value=250.0, value=165.0, step=0.5, format="%.1f")
+        usia = st.number_input("Usia (tahun)", min_value=15, max_value=100, value=25)
     
     with col2:
-        jenis_kelamin = st.selectbox("Jenis Kelamin", ["Pria", "Wanita"])
-        aktivitas = st.selectbox("Tingkat Aktivitas", 
-                               ["Sangat Jarang", "Ringan", "Sedang", "Aktif", "Sangat Aktif"],
+        st.markdown("#### Preferensi")
+        jenis_kelamin = st.radio("Jenis Kelamin", ["Pria", "Wanita"])
+        aktivitas = st.select_slider("Tingkat Aktivitas", 
+                               options=["Sangat Jarang", "Ringan", "Sedang", "Aktif", "Sangat Aktif"],
+                               value="Sedang",
                                help="Sangat Jarang: Hampir tidak berolahraga\nRingan: Olahraga 1-3 kali seminggu\nSedang: Olahraga 3-5 kali seminggu\nAktif: Olahraga 6-7 kali seminggu\nSangat Aktif: Olahraga berat setiap hari")
         tujuan = st.selectbox("Tujuan Diet", ["Menurunkan Berat Badan", "Mempertahankan Berat Badan", "Menambah Berat Badan"])
 
-    if st.button("Dapatkan Saran Diet"):
+    if st.button("Dapatkan Saran Diet", use_container_width=True):
         hasil = get_diet_recommendation(berat_badan, tinggi_badan, usia, jenis_kelamin, aktivitas, tujuan)
         
         st.subheader("Hasil Analisis")
         col1, col2, col3 = st.columns(3)
         with col1:
+            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
             st.metric("BMI", f"{hasil['bmi']}")
+            st.markdown('</div>', unsafe_allow_html=True)
         with col2:
+            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
             st.metric("Status", hasil['status'])
+            st.markdown('</div>', unsafe_allow_html=True)
         with col3:
+            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
             st.metric("Kebutuhan Kalori Harian", f"{hasil['kalori_harian']} kkal")
+            st.markdown('</div>', unsafe_allow_html=True)
         
-        st.info(hasil['saran'])
+        st.markdown(f'<div class="info-box">{hasil["saran"]}</div>', unsafe_allow_html=True)
         
         st.subheader("Rekomendasi Makanan")
         st.write("Berikut adalah contoh makanan sehat yang bisa Anda konsumsi:")
         
         col1, col2 = st.columns(2)
         with col1:
-            st.write("Sarapan:")
-            st.write("- Oatmeal dengan buah")
-            st.write("- Telur + roti gandum")
-            st.write("- Yogurt dengan granola")
+            st.markdown("##### Sarapan:")
+            st.markdown("- Oatmeal dengan buah")
+            st.markdown("- Telur + roti gandum")
+            st.markdown("- Yogurt dengan granola")
         
         with col2:
-            st.write("Makan Siang/Malam:")
-            st.write("- Nasi + ayam dada + sayuran")
-            st.write("- Ikan + kentang + sayuran")
-            st.write("- Tempe/tahu + sayuran")
+            st.markdown("##### Makan Siang/Malam:")
+            st.markdown("- Nasi + ayam dada + sayuran")
+            st.markdown("- Ikan + kentang + sayuran")
+            st.markdown("- Tempe/tahu + sayuran")
 
 elif menu == "Kalkulator Kalori":
     st.header("🍽️ Kalkulator Kalori Makanan")
+    st.markdown('<div class="info-box">Hitung kandungan nutrisi dari makanan yang Anda konsumsi</div>', unsafe_allow_html=True)
     
     # Tampilkan daftar makanan yang tersedia
-    st.subheader("Pilih Makanan")
+    col1, col2 = st.columns([2, 1])
     
-    selected_food = st.selectbox("Pilih Jenis Makanan", list(food_data.keys()))
-    portion = st.number_input("Porsi (gram)", min_value=1, value=100)
+    with col1:
+        selected_food = st.selectbox("Pilih Jenis Makanan", list(food_data.keys()))
     
-    if st.button("Hitung Kalori"):
+    with col2:
+        portion = st.number_input("Porsi (gram)", min_value=1, value=100, step=10)
+    
+    if st.button("Hitung Kalori", use_container_width=True):
         food_info = food_data[selected_food]
         kalori = (food_info['kalori'] * portion) / 100
         protein = (food_info['protein'] * portion) / 100
         karbohidrat = (food_info['karbohidrat'] * portion) / 100
         lemak = (food_info['lemak'] * portion) / 100
         
+        st.subheader(f"Informasi Nutrisi untuk {selected_food} ({portion}g)")
+        
         col1, col2, col3, col4 = st.columns(4)
         with col1:
+            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
             st.metric("Kalori", f"{round(kalori, 1)} kkal")
+            st.markdown('</div>', unsafe_allow_html=True)
         with col2:
+            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
             st.metric("Protein", f"{round(protein, 1)}g")
+            st.markdown('</div>', unsafe_allow_html=True)
         with col3:
+            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
             st.metric("Karbohidrat", f"{round(karbohidrat, 1)}g")
+            st.markdown('</div>', unsafe_allow_html=True)
         with col4:
+            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
             st.metric("Lemak", f"{round(lemak, 1)}g")
+            st.markdown('</div>', unsafe_allow_html=True)
     
-    st.info("Catatan: Nilai gizi di atas adalah perkiraan dan dapat bervariasi tergantung pada cara pengolahan dan kualitas bahan makanan.")
+        st.markdown('<div class="info-box">Catatan: Nilai gizi di atas adalah perkiraan dan dapat bervariasi tergantung pada cara pengolahan dan kualitas bahan makanan.</div>', unsafe_allow_html=True)
 
 elif menu == "Diagnosis Sederhana":
     st.header("🏥 Diagnosis Sederhana")
-    st.warning("Perhatian: Fitur ini hanya memberikan informasi awal dan BUKAN pengganti konsultasi dengan dokter!")
+    st.markdown('<div class="warning-box">Perhatian: Fitur ini hanya memberikan informasi awal dan BUKAN pengganti konsultasi dengan dokter!</div>', unsafe_allow_html=True)
     
     symptoms = [
         'demam', 'menggigil', 'sakit kepala', 'lemas',
@@ -346,26 +444,44 @@ elif menu == "Diagnosis Sederhana":
         'gatal', 'ruam kulit', 'mata berair'
     ]
     
-    selected_symptoms = st.multiselect(
-        "Pilih gejala yang Anda alami:",
-        options=sorted(symptoms),
-        help="Pilih satu atau lebih gejala yang Anda rasakan"
-    )
+    st.markdown("#### Pilih gejala yang Anda alami:")
+    
+    # Create a more organized layout for symptoms selection
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        selected_symptoms_1 = st.multiselect(
+            "Gejala umum:",
+            options=sorted(symptoms[:9]),
+            help="Pilih satu atau lebih gejala yang Anda rasakan"
+        )
+    
+    with col2:
+        selected_symptoms_2 = st.multiselect(
+            "Gejala spesifik:",
+            options=sorted(symptoms[9:]),
+            help="Pilih satu atau lebih gejala yang Anda rasakan"
+        )
+    
+    # Combine selected symptoms
+    selected_symptoms = selected_symptoms_1 + selected_symptoms_2
     
     if selected_symptoms:
-        if st.button("Analisis Gejala"):
+        if st.button("Analisis Gejala", use_container_width=True):
             possible_conditions = diagnose_symptoms(selected_symptoms)
             
             if possible_conditions:
                 st.subheader("Kemungkinan Kondisi:")
                 for condition in possible_conditions:
-                    st.write(f"- {condition}")
+                    st.markdown(f"- **{condition}**")
                 
-                st.info("""
-                Catatan penting:
-                1. Diagnosis ini hanya berdasarkan gejala umum dan BUKAN diagnosis medis resmi
-                2. Jika gejala berlanjut atau memburuk, segera konsultasikan dengan dokter
+                st.markdown("""
+                <div class="warning-box">
+                <strong>Catatan penting:</strong><br>
+                1. Diagnosis ini hanya berdasarkan gejala umum dan BUKAN diagnosis medis resmi<br>
+                2. Jika gejala berlanjut atau memburuk, segera konsultasikan dengan dokter<br>
                 3. Diagnosis ini tidak menggantikan pemeriksaan medis profesional
-                """)
+                </div>
+                """, unsafe_allow_html=True)
             else:
                 st.warning("Tidak dapat menentukan diagnosis berdasarkan gejala yang dipilih. Silakan konsultasikan dengan dokter untuk pemeriksaan lebih lanjut.")

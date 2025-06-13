@@ -334,7 +334,7 @@ if menu == "ChatBot Kesehatan":
 
 elif menu == "Saran Diet":
     st.header("🥗 Saran Diet dan Makanan Seimbang")
-    st.markdown('<div class="info-box">Dapatkan rekomendasi diet berdasarkan data fisik dan tujuan Anda</div>', unsafe_allow_html=True)
+    st.markdown('<div>Dapatkan rekomendasi diet berdasarkan data fisik dan tujuan Anda</div>', unsafe_allow_html=True)
     
     # Create two equal columns for input
     col1, col2 = st.columns(2)

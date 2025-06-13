@@ -4,9 +4,9 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 import tempfile
-import speech_recognition as sr
 from datetime import datetime
 import pytz
+import pickle
 
 # Load environment variables
 load_dotenv()

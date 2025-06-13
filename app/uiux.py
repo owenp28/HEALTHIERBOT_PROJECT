@@ -3,7 +3,6 @@ import json
 import pandas as pd
 from dotenv import load_dotenv
 import os
-import speech_recognition as sr
 
 # Load environment variables
 load_dotenv()
@@ -20,31 +19,6 @@ st.set_page_config(
         'About': "# HealthierBot - Asisten Kesehatan Medis"
     }
 )
-
-# Function to transcribe audio
-def transcribe_audio(audio_bytes):
-    # Simpan audio ke file sementara
-    temp_file = "temp_audio.wav"
-    with open(temp_file, "wb") as f:
-        f.write(audio_bytes)
-    
-    # Transkripsi
-    recognizer = sr.Recognizer()
-    try:
-        with sr.AudioFile(temp_file) as source:
-            audio_data = recognizer.record(source)
-            text = recognizer.recognize_google(audio_data, language="id-ID")
-            return text.lower()
-    except sr.UnknownValueError:
-        return "Maaf, audio tidak dapat dikenali"
-    except sr.RequestError:
-        return "Maaf, layanan tidak tersedia"
-    except Exception as e:
-        return f"Error: {str(e)}"
-    finally:
-        # Hapus file sementara
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
 
 # Load datasets
 @st.cache_data
@@ -231,74 +205,6 @@ if menu == "ChatBot Kesehatan":
         st.caption("Jika tidak diisi, bot akan menggunakan dataset lokal")
         use_openai = st.checkbox("Gunakan OpenAI API", value=False)
     
-    # Speech input option
-    use_speech = st.checkbox("Gunakan input suara")
-    
-    if use_speech:
-        st.info("Unggah file audio (.wav) untuk dikonversi menjadi teks")
-        audio_file = st.file_uploader("Unggah file audio", type=["wav"])
-        
-        if audio_file is not None:
-            # Baca file audio
-            audio_bytes = audio_file.read()
-            
-            # Tampilkan audio
-            st.audio(audio_bytes, format="audio/wav")
-            
-            if st.button("Transkripsi & Kirim"):
-                with st.spinner("Mentranskripsikan audio..."):
-                    user_input = transcribe_audio(audio_bytes)
-                    st.success(f"Transkripsi: {user_input}")
-                    
-                    # Process the transcribed input
-                    if user_input and user_input != "Maaf, audio tidak dapat dikenali" and user_input != "Maaf, layanan tidak tersedia":
-                        # Display user message
-                        with st.chat_message("user"):
-                            st.write(user_input)
-                        
-                        # Add user message to chat history
-                        st.session_state.chat_history.append({"role": "user", "content": user_input})
-                        save_chat_history()
-                        
-                        # Get response
-                        with st.chat_message("assistant"):
-                            with st.spinner("Berpikir..."):
-                                if use_openai and api_key:
-                                    try:
-                                        from openai import OpenAI
-                                        client = OpenAI(api_key=api_key)
-                                        
-                                        messages = [
-                                            {"role": "system", "content": "Kamu adalah HealthierBot, asisten kesehatan yang membantu memberikan informasi medis. Kamu memberikan informasi yang akurat dan mudah dipahami. Kamu BUKAN dokter dan selalu menyarankan pengguna untuk berkonsultasi dengan profesional medis untuk diagnosis dan pengobatan."}
-                                        ]
-                                        
-                                        # Add chat history
-                                        for message in st.session_state.chat_history[:-1]:
-                                            messages.append({"role": message["role"], "content": message["content"]})
-                                        
-                                        # Add current prompt
-                                        messages.append({"role": "user", "content": user_input})
-                                        
-                                        response = client.chat.completions.create(
-                                            model="gpt-3.5-turbo",
-                                            messages=messages,
-                                            max_tokens=500,
-                                            temperature=0.7
-                                        )
-                                        
-                                        ai_response = response.choices[0].message.content
-                                    except Exception as e:
-                                        ai_response = f"Tidak dapat menggunakan OpenAI API: {str(e)}\n\n"
-                                        ai_response += get_response_from_dataset(user_input, chat_data)
-                                else:
-                                    ai_response = get_response_from_dataset(user_input, chat_data)
-                                
-                                st.write(ai_response)
-                        
-                        # Add AI response to chat history
-                        st.session_state.chat_history.append({"role": "assistant", "content": ai_response})
-                        save_chat_history()
-    
     # Display chat history if enabled
     if show_history and len(st.session_state.chat_history) > 0:
         st.subheader("History Chat")
@@ -307,56 +213,55 @@ if menu == "ChatBot Kesehatan":
                 st.write(message["content"])
     
     # Get user input via text
-    if not use_speech:
-        user_input = st.chat_input("Tanyakan sesuatu tentang kesehatan...")
+    user_input = st.chat_input("Tanyakan sesuatu tentang kesehatan...")
+    
+    if user_input:
+        # Display user message
+        with st.chat_message("user"):
+            st.write(user_input)
         
-        if user_input:
-            # Display user message
-            with st.chat_message("user"):
-                st.write(user_input)
-            
-            # Add user message to chat history
-            st.session_state.chat_history.append({"role": "user", "content": user_input})
-            save_chat_history()
-            
-            # Get response
-            with st.chat_message("assistant"):
-                with st.spinner("Berpikir..."):
-                    if use_openai and api_key:
-                        try:
-                            from openai import OpenAI
-                            client = OpenAI(api_key=api_key)
-                            
-                            messages = [
-                                {"role": "system", "content": "Kamu adalah HealthierBot, asisten kesehatan yang membantu memberikan informasi medis. Kamu memberikan informasi yang akurat dan mudah dipahami. Kamu BUKAN dokter dan selalu menyarankan pengguna untuk berkonsultasi dengan profesional medis untuk diagnosis dan pengobatan."}
-                            ]
-                            
-                            # Add chat history
-                            for message in st.session_state.chat_history[:-1]:
-                                messages.append({"role": message["role"], "content": message["content"]})
-                            
-                            # Add current prompt
-                            messages.append({"role": "user", "content": user_input})
-                            
-                            response = client.chat.completions.create(
-                                model="gpt-3.5-turbo",
-                                messages=messages,
-                                max_tokens=500,
-                                temperature=0.7
-                            )
-                            
-                            ai_response = response.choices[0].message.content
-                        except Exception as e:
-                            ai_response = f"Tidak dapat menggunakan OpenAI API: {str(e)}\n\n"
-                            ai_response += get_response_from_dataset(user_input, chat_data)
-                    else:
-                        ai_response = get_response_from_dataset(user_input, chat_data)
-                    
-                    st.write(ai_response)
-            
-            # Add AI response to chat history
-            st.session_state.chat_history.append({"role": "assistant", "content": ai_response})
-            save_chat_history()
+        # Add user message to chat history
+        st.session_state.chat_history.append({"role": "user", "content": user_input})
+        save_chat_history()
+        
+        # Get response
+        with st.chat_message("assistant"):
+            with st.spinner("Berpikir..."):
+                if use_openai and api_key:
+                    try:
+                        from openai import OpenAI
+                        client = OpenAI(api_key=api_key)
+                        
+                        messages = [
+                            {"role": "system", "content": "Kamu adalah HealthierBot, asisten kesehatan yang membantu memberikan informasi medis. Kamu memberikan informasi yang akurat dan mudah dipahami. Kamu BUKAN dokter dan selalu menyarankan pengguna untuk berkonsultasi dengan profesional medis untuk diagnosis dan pengobatan."}
+                        ]
+                        
+                        # Add chat history
+                        for message in st.session_state.chat_history[:-1]:
+                            messages.append({"role": message["role"], "content": message["content"]})
+                        
+                        # Add current prompt
+                        messages.append({"role": "user", "content": user_input})
+                        
+                        response = client.chat.completions.create(
+                            model="gpt-3.5-turbo",
+                            messages=messages,
+                            max_tokens=500,
+                            temperature=0.7
+                        )
+                        
+                        ai_response = response.choices[0].message.content
+                    except Exception as e:
+                        ai_response = f"Tidak dapat menggunakan OpenAI API: {str(e)}\n\n"
+                        ai_response += get_response_from_dataset(user_input, chat_data)
+                else:
+                    ai_response = get_response_from_dataset(user_input, chat_data)
+                
+                st.write(ai_response)
+        
+        # Add AI response to chat history
+        st.session_state.chat_history.append({"role": "assistant", "content": ai_response})
+        save_chat_history()
 
 elif menu == "Saran Diet":
     st.header("🥗 Saran Diet dan Makanan Seimbang")

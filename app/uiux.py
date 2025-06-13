@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import pandas as pd
 import os
+import speech_recognition as sr
 from dotenv import load_dotenv
 import tempfile
 from datetime import datetime

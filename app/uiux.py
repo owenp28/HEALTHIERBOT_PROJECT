@@ -392,7 +392,7 @@ elif menu == "Saran Diet":
 
 elif menu == "Kalkulator Kalori":
     st.header("🍽️ Kalkulator Kalori Makanan")
-    st.markdown('<div class="info-box">Hitung kandungan nutrisi dari makanan yang Anda konsumsi</div>', unsafe_allow_html=True)
+    st.markdown('<div>Hitung kandungan nutrisi dari makanan yang Anda konsumsi</div>', unsafe_allow_html=True)
     
     # Tampilkan daftar makanan yang tersedia
     col1, col2 = st.columns([2, 1])
@@ -434,7 +434,7 @@ elif menu == "Kalkulator Kalori":
 
 elif menu == "Diagnosis Sederhana":
     st.header("🏥 Diagnosis Sederhana")
-    st.markdown('<div class="warning-box">Perhatian: Fitur ini hanya memberikan informasi awal dan BUKAN pengganti konsultasi dengan dokter!</div>', unsafe_allow_html=True)
+    st.markdown('<div>Perhatian: Fitur ini hanya memberikan informasi awal dan BUKAN pengganti konsultasi dengan dokter!</div>', unsafe_allow_html=True)
     
     symptoms = [
         'demam', 'menggigil', 'sakit kepala', 'lemas',

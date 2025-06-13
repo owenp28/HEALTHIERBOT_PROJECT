@@ -9,4 +9,3 @@ torch
 librosa
 openai
 streamlit
-speech_recognition

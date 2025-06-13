@@ -1,11 +1,7 @@
 import streamlit as st
 import json
 import pandas as pd
-from dotenv import load_dotenv
 import os
-
-# Load environment variables
-load_dotenv()
 
 # Page configuration
 st.set_page_config(

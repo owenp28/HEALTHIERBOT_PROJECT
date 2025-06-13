@@ -360,19 +360,19 @@ elif menu == "Saran Diet":
         st.subheader("Hasil Analisis")
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+            st.markdown('<div>', unsafe_allow_html=True)
             st.metric("BMI", f"{hasil['bmi']}")
             st.markdown('</div>', unsafe_allow_html=True)
         with col2:
-            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+            st.markdown('<div>', unsafe_allow_html=True)
             st.metric("Status", hasil['status'])
             st.markdown('</div>', unsafe_allow_html=True)
         with col3:
-            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+            st.markdown('<div>', unsafe_allow_html=True)
             st.metric("Kebutuhan Kalori Harian", f"{hasil['kalori_harian']} kkal")
             st.markdown('</div>', unsafe_allow_html=True)
         
-        st.markdown(f'<div class="info-box">{hasil["saran"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div>{hasil["saran"]}</div>', unsafe_allow_html=True)
         
         st.subheader("Rekomendasi Makanan")
         st.write("Berikut adalah contoh makanan sehat yang bisa Anda konsumsi:")
@@ -414,23 +414,23 @@ elif menu == "Kalkulator Kalori":
         
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+            st.markdown('<div>', unsafe_allow_html=True)
             st.metric("Kalori", f"{round(kalori, 1)} kkal")
             st.markdown('</div>', unsafe_allow_html=True)
         with col2:
-            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+            st.markdown('<div>', unsafe_allow_html=True)
             st.metric("Protein", f"{round(protein, 1)}g")
             st.markdown('</div>', unsafe_allow_html=True)
         with col3:
-            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+            st.markdown('<div>', unsafe_allow_html=True)
             st.metric("Karbohidrat", f"{round(karbohidrat, 1)}g")
             st.markdown('</div>', unsafe_allow_html=True)
         with col4:
-            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+            st.markdown('<div>', unsafe_allow_html=True)
             st.metric("Lemak", f"{round(lemak, 1)}g")
             st.markdown('</div>', unsafe_allow_html=True)
     
-        st.markdown('<div class="info-box">Catatan: Nilai gizi di atas adalah perkiraan dan dapat bervariasi tergantung pada cara pengolahan dan kualitas bahan makanan.</div>', unsafe_allow_html=True)
+        st.markdown('<div>Catatan: Nilai gizi di atas adalah perkiraan dan dapat bervariasi tergantung pada cara pengolahan dan kualitas bahan makanan.</div>', unsafe_allow_html=True)
 
 elif menu == "Diagnosis Sederhana":
     st.header("🏥 Diagnosis Sederhana")
@@ -476,7 +476,7 @@ elif menu == "Diagnosis Sederhana":
                     st.markdown(f"- **{condition}**")
                 
                 st.markdown("""
-                <div class="warning-box">
+                <div>
                 <strong>Catatan penting:</strong><br>
                 1. Diagnosis ini hanya berdasarkan gejala umum dan BUKAN diagnosis medis resmi<br>
                 2. Jika gejala berlanjut atau memburuk, segera konsultasikan dengan dokter<br>
